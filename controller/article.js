@@ -35,7 +35,23 @@ router.get('/article', (req,res) => {
     pn = parseInt(pn)
     size = parseInt(size)
 
-    articleModel.find().skip((pn-1)*size).limit(size).populate({
+    articleModel.find().skip((pn-1)*size).limit(size).sort({_id: -1}).populate({
+        path: 'author',
+        select: '-password -email'
+    }).populate({
+        path: 'category'
+    }).then(data => {
+        res.json({
+            code: 200,
+            data
+        })
+    })
+})
+
+router.get('/article/:id', (req, res) => {
+    const {id} = req.params
+
+    articleModel.findById(id).populate({
         path: 'author',
         select: '-password -email'
     }).populate({
